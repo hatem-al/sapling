@@ -106,12 +106,20 @@ def test_diff_alignment(tmp_path: Path):
     _run([GIT_BIN, "add", "file.txt"], git_repo)
     _run(SAP_CMD + ["add", "file.txt"], sap_repo)
 
+    env = {
+        **os.environ,
+        "GIT_AUTHOR_NAME": "Parity",
+        "GIT_AUTHOR_EMAIL": "parity@example.com",
+        "GIT_COMMITTER_NAME": "Parity",
+        "GIT_COMMITTER_EMAIL": "parity@example.com",
+    }
     subprocess.run(
         [GIT_BIN, "commit", "-m", "base"],
         cwd=git_repo,
         check=True,
         capture_output=True,
         text=True,
+        env=env,
     )
     subprocess.run(
         SAP_CMD + ["commit", "-m", "base"],
@@ -119,6 +127,7 @@ def test_diff_alignment(tmp_path: Path):
         check=True,
         capture_output=True,
         text=True,
+        env=env,
     )
 
     (git_repo / "file.txt").write_text("one\nchanged\n", encoding="utf-8")
