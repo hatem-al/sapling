@@ -1,0 +1,18 @@
+[project]
+name = "sappling"
+version = "0.1.0"
+description = "Educational Git implementation in Python"
+authors = [{ name = "Hatem", email = "hatem@example.com" }]
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0.0"]
+
+[project.scripts]
+sappling = "sappling.cli:main"
+
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
