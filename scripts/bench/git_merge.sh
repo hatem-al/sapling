@@ -7,17 +7,20 @@ mkdir -p "$TARGET"
 cd "$TARGET"
 
 git init -q .
-cat <<'TXT' > file.txt
-base
-TXT
+git checkout -q -b master
+python3 - <<'PY'
+from pathlib import Path
+Path('file.txt').write_text('base\n', encoding='utf-8')
+PY
 
 git add file.txt
 git commit -q -m base
 
 git checkout -q -b feature
-cat <<'TXT' > file.txt
-feature
-TXT
+python3 - <<'PY'
+from pathlib import Path
+Path('file.txt').write_text('feature\n', encoding='utf-8')
+PY
 
 git commit -am feature
 

@@ -7,7 +7,7 @@ mkdir -p "$TARGET"
 cd "$TARGET"
 
 git init -q .
-python - <<'PY'
+python3 - <<'PY'
 from pathlib import Path
 Path('file.txt').write_text('hello git\n')
 PY

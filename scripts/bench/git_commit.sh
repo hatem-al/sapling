@@ -7,9 +7,10 @@ mkdir -p "$TARGET"
 cd "$TARGET"
 
 git init -q .
-cat <<'TXT' > file.txt
-hello
-TXT
+python3 - <<'PY'
+from pathlib import Path
+Path('file.txt').write_text('hello\n', encoding='utf-8')
+PY
 
 git add file.txt
 GIT_AUTHOR_NAME="Bench" GIT_AUTHOR_EMAIL="bench@example.com" \

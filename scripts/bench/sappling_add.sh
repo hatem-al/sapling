@@ -7,7 +7,7 @@ mkdir -p "$TARGET"
 cd "$TARGET"
 
 python3 -m sappling.cli init . >/dev/null
-python - <<'PY'
+python3 - <<'PY'
 from pathlib import Path
 Path('file.txt').write_text('hello sappling\n')
 PY
