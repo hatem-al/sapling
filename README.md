@@ -1,48 +1,356 @@
-# sappling
+# 🌱 Sappling
 
-Sappling is a from-scratch exploration of Git's storage model and porcelain built in Python. The project mirrors Git's object database (blobs, trees, commits) and plumbing/porcelain commands to build an intuition-first understanding of version control internals.
+**A from-scratch exploration of Git's storage model and porcelain built in Python**
 
-## Project status
+Sappling mirrors Git's object database (blobs, trees, commits) and core commands to build an intuition-first understanding of version control internals.
 
-Milestones delivered so far:
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-- Git-compatible object storage (`hash-object`, `cat-file`)
-- JSON-backed staging area plus full `add`/`status`/`diff`
-- Commit/branch/log plumbing
-- Fast-forward + three-way merges with conflict markers
-- Integration-style CLI (`sappling`) that mirrors core Git porcelain
+[Features](#features) • [Installation](#installation) • [Examples](#examples) • [Architecture](#architecture) • [What I Learned](#what-i-learned)
 
-See `docs/Architecture.md` for an overview and `docs/Comparison.md` for Git parity notes.
+---
 
-## Development
+## Why Sappling?
 
-1. Create a virtual environment and install dependencies:
+**For learning:** Understand Git by building it. Every commit, merge, and branch operation is implemented in readable Python with extensive comments.
 
-   ```bash
-   python3 -m venv .venv
-   source .venv/bin/activate
-   pip install -e .[dev]
-   ```
+**For teaching:** The JSON index and loose-only objects make Git's internals transparent. Perfect for talks, tutorials, or CS courses.
 
-2. Run the test suite:
+**For interviews:** Demonstrates deep understanding of version control, data structures (DAGs, content-addressable storage), and systems programming.
 
-   ```bash
-   PYTHONPATH=src pytest
-   ```
+---
+
+## Features
+
+### ✅ Implemented
+
+- **Git-compatible object storage** (`hash-object`, `cat-file`)
+  - SHA-1 content addressing with zlib compression
+  - Blob, tree, and commit objects matching Git's format
+  
+- **JSON-backed staging area** (`add`, `status`, `diff`)
+  - Human-readable index for debugging
+  - Full metadata tracking (mode, mtime, size, OID)
+  
+- **Commit & branch operations** (`commit`, `branch`, `checkout`, `log`)
+  - DAG-based history with parent pointers
+  - Branch refs stored as simple text files
+  
+- **Merge strategies** (`merge`)
+  - Fast-forward detection
+  - Three-way merge with conflict markers
+  - Automatic conflict detection
+
+
+---
+
+## Installation
+
+### Prerequisites
+
+- Python 3.10+
+- Git (for comparison tests and benchmarks)
+
+### Quick Install
+```bash
+# Clone the repository
+git clone https://github.com/hatem-al/sappling.git
+cd sappling
+
+# Create virtual environment
+python3 -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Install in development mode
+pip install -e ".[dev]"
+
+# Verify installation
+sappling --version
+pytest
+```
+
+### System Requirements
+
+- macOS, Linux, or WSL2
+- ~10MB disk space for objects
+- Python 3.10+ (uses type hints and structural pattern matching)
+
+---
+
+## Examples
+
+### Basic Workflow
+```bash
+# Create and initialize repository
+mkdir my-project
+cd my-project
+sappling init .  # Note: Sappling expects the directory to exist (like Git)
+
+# Create and commit a file
+echo "Hello World" > hello.txt
+sappling add hello.txt
+sappling commit -m "Initial commit"
+
+# Create a branch
+sappling branch feature
+sappling checkout feature
+
+# Make changes
+echo "New feature" > feature.txt
+sappling add feature.txt
+sappling commit -m "Add feature"
+
+# Merge back
+sappling checkout master
+sappling merge feature
+
+# View history
+sappling log
+```
+
+### Inspecting Objects
+```bash
+# See what's in .git/objects
+find .git/objects -type f
+
+# Read a blob
+sappling cat-file <blob-sha>
+
+# Compare with Git (objects should match!)
+git cat-file -p <same-sha>
+
+# View the JSON index
+cat .git/index  # Human-readable!
+```
+
+### Working with Merges
+```bash
+# Create conflicting changes
+sappling branch fix-1
+sappling checkout fix-1
+echo "Fix A" > file.txt
+sappling add file.txt
+sappling commit -m "Fix A"
+
+sappling checkout master
+sappling branch fix-2
+sappling checkout fix-2
+echo "Fix B" > file.txt
+sappling add file.txt
+sappling commit -m "Fix B"
+
+# Merge with conflict
+sappling checkout master
+sappling merge fix-1  # Works (fast-forward)
+sappling merge fix-2  # Conflict!
+
+# Resolve and commit
+# Edit file.txt to resolve <<<<<<< markers
+sappling add file.txt
+sappling commit -m "Merge fix-2"
+```
+
+---
 
 ## Demo
 
-- Run `bash scripts/demo.sh /tmp/sappling-demo` for a guided walkthrough (init, branching, merging, object inspection).
-- Sample terminal capture (`docs/demo.cast`) can be played with `asciinema play docs/demo.cast`. Re-record it locally via `asciinema rec docs/demo.cast -- bash scripts/demo.sh`.
+### Automated Demo Script
+
+Run the included demo to see Sappling in action:
+```bash
+# The demo script creates the directory for you
+bash scripts/demo.sh /tmp/sappling-demo
+```
+
+The script demonstrates:
+- Repository initialization (directory must exist first, like Git)
+- Adding and committing files
+- Creating and merging branches
+- Viewing history and object storage
+- Inspecting commit objects with `cat-file`
+
+### Video Demo (Optional)
+
+Record and play back terminal sessions with asciinema:
+```bash
+# Record a demo
+asciinema rec docs/demo.cast -- bash scripts/demo.sh /tmp/demo
+
+# Play it back
+asciinema play docs/demo.cast
+```
+
+---
+
+## Project Status
+
+### Milestones Delivered
+
+- [x] Git-compatible object storage (`hash-object`, `cat-file`)
+- [x] JSON-backed staging area plus full `add`/`status`/`diff`
+- [x] Commit/branch/log plumbing
+- [x] Fast-forward + three-way merges with conflict markers
+- [x] Integration-style CLI (`sappling`) that mirrors core Git porcelain
+
+See [`docs/Architecture.md`](docs/Architecture.md) for an overview and [`docs/Comparison.md`](docs/Comparison.md) for Git parity notes.
+
+---
+
+## Development
+
+### Running Tests
+```bash
+# Activate virtual environment
+source venv/bin/activate
+
+# Run test suite
+pytest
+
+# Run with coverage
+pytest --cov=sappling --cov-report=html
+
+# Run specific test file
+pytest tests/test_objects.py -v
+```
+
+### Project Structure
+```
+sappling/
+├── src/sappling/
+│   ├── __init__.py         # Public API
+│   ├── cli.py              # Command-line interface
+│   ├── objects.py          # Object storage (blobs, trees, commits)
+│   ├── index.py            # JSON staging area
+│   ├── plumbing.py         # Tree/commit/merge logic
+│   └── repository.py       # Repository primitives
+├── tests/
+│   ├── test_objects.py
+│   ├── test_index.py
+│   ├── test_plumbing.py
+│   └── test_cli.py
+├── docs/
+│   ├── Architecture.md     # System design
+│   ├── Comparison.md       # Sappling vs Git
+│   └── Benchmark.md        # Performance data
+├── scripts/
+│   └── demo.sh             # Automated demo
+└── pyproject.toml
+```
+
+---
 
 ## Benchmarks
 
-- Ready-made helpers live in `scripts/bench/`. Pair them with `hyperfine` to compare Git vs. Sappling: `hyperfine --warmup 3 "bash scripts/bench/git_commit.sh /tmp/bench" "bash scripts/bench/sappling_commit.sh /tmp/bench"`.
-- Detailed numbers and methodology live in `docs/Benchmark.md`.
+Sappling trades absolute speed for clarity. The following measurements were taken on a 2024 MacBook Pro (M4, Python 3.14) using [`hyperfine`](https://github.com/sharkdp/hyperfine).
+
+| Scenario | Git | Sappling | Overhead |
+|----------|-----|----------|----------|
+| `init` | 14.8 ms | 39.2 ms | **2.6x** |
+| `add` (1×2 KB file) | 39.9 ms | 91.1 ms | **2.3x** |
+| `commit` | 52.6 ms | 111.9 ms | **2.1x** |
+| `merge` (fast-forward) | 114.4 ms | 329.6 ms | **2.9x** |
+
+**Average overhead: 2.5x slower than Git** - acceptable for a learning project focused on clarity over performance.
+
+See [`docs/Benchmark.md`](docs/Benchmark.md) for detailed methodology and reproduction instructions.
+
+## Architecture
+
+Sappling follows Git's plumbing closely:
+
+- **`sappling.objects`**: SHA-1 hashing + zlib compression into `.git/objects/`
+- **`sappling.index`**: JSON index capturing `path/mode/mtime/size/oid`
+- **`sappling.plumbing`**: Tree assembly, commit authoring, refs, merge logic
+- **`sappling.cli`**: Porcelain commands wired via `argparse`
+
+### Object Model
+
+Every loose object is stored as `type size\0payload`:
+
+- **Blobs**: `blob <len>\0<data>`
+- **Trees**: Concatenated entries of `mode name\0<20-byte sha>`
+- **Commits**: Plaintext metadata with tree/parent pointers + message
+
+See [`docs/Architecture.md`](docs/Architecture.md) for complete details.
+
+---
 
 ## What I Learned
 
-- **Content-addressable data stores feel tangible** when you walk the blob/tree/commit relationships manually. Mirroring Git’s exact object encoding paid off because it let me diff Sappling’s output against stock Git to gain confidence.
-- **A readable index accelerates debugging.** The JSON index makes staging semantics transparent and turned merge development into a matter of inspecting a single file.
-- **Three-way merge logic is mostly about bookkeeping.** Once I built helpers to map tree entries into dictionaries, producing conflict markers and rehydrating the working tree felt approachable.
-- **Performance matters less than fidelity for pedagogy.** Sticking to loose objects and pure Python makes Sappling slower than Git, but the simplicity keeps the code reviewable for talks/demos.
+### Content-Addressable Storage Clicks When You Build It
+
+Walking blob→tree→commit relationships manually made Git's object model intuitive. Mirroring Git's exact encoding (`type size\0payload`) let me `diff` Sappling's `.git/objects/` against real Git to verify correctness—instant feedback loop for learning.
+
+### JSON Index Accelerates Debugging 10x
+
+Using JSON instead of Git's binary index format made merge development dramatically faster. I could inspect staging state with `cat .git/index` and immediately see what was staged, without writing index parsers or debugging binary formats.
+
+**Specific example:** When debugging three-way merge, I could see exactly which files had conflicting OIDs by just opening the index file. With binary format, I'd need to write a parser first.
+
+### Three-Way Merge is 80% Bookkeeping, 20% Algorithm
+
+The "merge algorithm" everyone talks about? It's surprisingly simple:
+1. Find common ancestor (graph traversal)
+2. Compare base→ours and base→theirs (tree diffs)
+3. Apply both changes (dict operations)
+4. Detect conflicts (set intersections)
+
+The hard part was tree traversal, file mode handling, and working directory updates—not the merge logic itself.
+
+### Performance Trade-offs Are Instructive
+
+Sappling is ~2-3x slower than Git (see benchmarks). Why?
+- **Python vs C:** Interpreted language overhead
+- **Loose objects only:** No pack files or delta compression
+- **No caching:** Re-reads objects on every operation
+
+But this simplicity makes the code reviewable line-by-line. For pedagogy, clarity > speed.
+
+### Git's Design is Elegant
+
+Building this gave me deep appreciation for Git's architecture:
+- **Content-addressable storage:** Deduplication and integrity for free
+- **Refs are just pointers:** Branches are 41-byte files
+- **Trees are recursive:** Elegant directory representation
+- **Commits are immutable:** Time-travel debugging built-in
+
+The complexity in production Git (pack files, delta compression, sparse checkout) is all performance optimization. The core model is beautiful.
+
+---
+
+## Contributing
+
+This is primarily an educational project, but improvements are welcome:
+
+1. Fork the repository
+2. Create a feature branch
+3. Add tests for new functionality
+4. Ensure all tests pass (`pytest`)
+5. Submit a pull request
+
+---
+
+## License
+
+MIT License - see LICENSE file for details.
+
+---
+
+## Notes
+
+- **Sappling expects the target directory to exist when running `sappling init <path>` (matching Git's behavior)**
+- Sappling uses `master` as the default branch (matching Git's historical default)
+- All object hashes are Git-compatible - you can compare `.git/objects/` directly with real Git
+- The JSON index is human-readable for debugging but slower than Git's binary format
+- No network operations (push/pull) - focus is on local version control internals
+
+---
+
+<div align="center">
+
+**Built with ❤️ to understand Git deeply**
+
+[Report Bug](https://github.com/hatem-al/sappling/issues) • [Request Feature](https://github.com/hatem-al/sappling/issues)
+
+</div>
