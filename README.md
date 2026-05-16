@@ -8,6 +8,8 @@ Sapling produces SHA-1 object IDs byte-for-byte identical to real Git. You can `
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
+![demo](docs/demo.gif)
+
 [Features](#features) • [Installation](#installation) • [Examples](#examples) • [Architecture](#architecture) • [What I Learned](#what-i-learned)
 
 ---

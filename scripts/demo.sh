@@ -3,38 +3,63 @@ set -euo pipefail
 
 REPO_DIR=${1:-/tmp/sapling-demo}
 
-echo "[sapling-demo] Preparing fresh workspace at $REPO_DIR"
+# Helpers ---------------------------------------------------------------
+PROMPT="\033[1;32m❯\033[0m "
+
+cmd() {
+    echo ""
+    printf "${PROMPT}"
+    # type out the command character by character
+    local text="$1"
+    for ((i=0; i<${#text}; i++)); do
+        printf '%s' "${text:$i:1}"
+        sleep 0.04
+    done
+    echo ""
+    sleep 0.2
+    eval "$1"
+    sleep 0.6
+}
+
+banner() {
+    echo ""
+    printf "\033[1;34m# %s\033[0m\n" "$1"
+    sleep 0.4
+}
+
+# Setup -----------------------------------------------------------------
 rm -rf "$REPO_DIR"
 mkdir -p "$REPO_DIR"
 cd "$REPO_DIR"
 
-sapling init .
+# 1. Init ---------------------------------------------------------------
+banner "Initialize a new repository"
+cmd "sapling init ."
 
-echo "hello world" > hello.txt
-sapling add hello.txt
-sapling commit -m "Initial commit"
+# 2. First commit -------------------------------------------------------
+banner "Stage and commit a file"
+cmd "echo 'hello world' > hello.txt"
+cmd "sapling add hello.txt"
+cmd "sapling commit -m 'Initial commit'"
 
-sapling branch feature
-sapling checkout feature
+# 3. Branch & second commit ---------------------------------------------
+banner "Create a feature branch"
+cmd "sapling branch feature"
+cmd "sapling checkout feature"
+cmd "echo 'print(\"hello\")' > app.py"
+cmd "sapling add app.py"
+cmd "sapling commit -m 'Add app skeleton'"
 
-echo "print('hi sapling')" > app.py
-sapling add app.py
-sapling commit -m "Add app skeleton"
+# 4. Merge --------------------------------------------------------------
+banner "Merge back into master"
+cmd "sapling checkout master"
+cmd "sapling merge feature"
 
-sapling checkout master
+# 5. Log ----------------------------------------------------------------
+banner "Inspect history"
+cmd "sapling log"
 
-echo "hello master" >> hello.txt
-sapling add hello.txt
-sapling commit -m "Touch base branch"
-
-sapling merge feature || true
-
-sapling status
-sapling log
-
-printf '\n[sapling-demo] Loose objects in .git/objects:\n'
-find .git/objects -type f | sort
-
-printf '\n[sapling-demo] Dump commit object via cat-file:\n'
-LATEST=$(sapling log | head -n1 | awk '{print $2}')
-sapling cat-file "$LATEST"
+# 6. Git compatibility --------------------------------------------------
+banner "Objects are byte-for-byte Git-compatible"
+LATEST=$(sapling log | awk 'NR==1{print $2}')
+cmd "git cat-file -p $LATEST"
