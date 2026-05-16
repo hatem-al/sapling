@@ -192,30 +192,54 @@ sapling commit -m "Merge fix-2"
 
 ## Demo
 
-### Automated Demo Script
-
-Run the included demo to see Sapling in action:
 ```bash
-# The demo script creates the directory for you
 bash scripts/demo.sh /tmp/sapling-demo
 ```
 
-The script demonstrates:
-- Repository initialization (directory must exist first, like Git)
-- Adding and committing files
-- Creating and merging branches
-- Viewing history and object storage
-- Inspecting commit objects with `cat-file`
-
-### Video Demo (Optional)
-
-Record and play back terminal sessions with asciinema:
 ```bash
-# Record a demo
-asciinema rec docs/demo.cast -- bash scripts/demo.sh /tmp/demo
+# Initialize a new repository
+❯ sapling init .
+Initialized empty sapling repository in /tmp/sapling-demo/.git
 
-# Play it back
-asciinema play docs/demo.cast
+# Stage and commit a file
+❯ echo 'hello world' > hello.txt
+❯ sapling add hello.txt
+❯ sapling commit -m 'Initial commit'
+[87d39bc] Initial commit
+
+# Create a feature branch
+❯ sapling branch feature
+❯ sapling checkout feature
+Switched to branch 'feature'
+❯ echo 'print("hello")' > app.py
+❯ sapling add app.py
+❯ sapling commit -m 'Add app skeleton'
+[7a26441] Add app skeleton
+
+# Merge back into master
+❯ sapling checkout master
+Switched to branch 'master'
+❯ sapling merge feature
+Fast-forward to 7a26441
+
+# Inspect history
+❯ sapling log
+commit 7a26441...
+Author: Sapling User <user@example.com>
+    Add app skeleton
+
+commit 87d39bc...
+Author: Sapling User <user@example.com>
+    Initial commit
+
+# Objects are byte-for-byte Git-compatible
+❯ git cat-file -p 7a26441
+tree 695c979a89b8448ee4e31c02ba7f8ad847f3bbe9
+parent 87d39bcaaae4b5e2b47c4f07bf...
+author Sapling User <user@example.com> 1778956490 +0300
+committer Sapling User <user@example.com> 1778956490 +0300
+
+Add app skeleton
 ```
 
 ---
