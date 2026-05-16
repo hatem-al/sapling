@@ -1,10 +1,19 @@
+Metadata-Version: 2.4
+Name: sapling
+Version: 0.1.0
+Summary: Educational Git implementation in Python
+Author-email: Hatem <hatem.almasri05@hmail.com>
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Dynamic: license-file
+
 # 🌱 Sapling
 
-**Git reimplemented from scratch in Python — objects, index, branches, and three-way merge**
+**A from-scratch exploration of Git's storage model and porcelain built in Python**
 
-Sapling produces SHA-1 object IDs byte-for-byte identical to real Git. You can `git cat-file -p` any commit Sapling writes, and vice versa. The implementation covers the full local workflow: staging, commits, branches, checkout, log, status, diff, and merge with conflict markers.
+Sapling mirrors Git's object database (blobs, trees, commits) and core commands to build an intuition-first understanding of version control internals.
 
-[![CI](https://github.com/hatem-al/sapling/actions/workflows/ci.yml/badge.svg)](https://github.com/hatem-al/sapling/actions/workflows/ci.yml)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
@@ -19,40 +28,6 @@ Sapling produces SHA-1 object IDs byte-for-byte identical to real Git. You can `
 **For teaching:** The JSON index and loose-only objects make Git's internals transparent. Perfect for talks, tutorials, or CS courses.
 
 **For interviews:** Demonstrates deep understanding of version control, data structures (DAGs, content-addressable storage), and systems programming.
-
----
-
-## What I Learned
-
-### Content-Addressable Storage Clicks When You Build It
-
-Walking blob→tree→commit relationships manually made Git's object model intuitive. Mirroring Git's exact encoding (`type size\0payload`) let me `diff` Sapling's `.git/objects/` against real Git to verify correctness—instant feedback loop for learning.
-
-### JSON Index Accelerates Debugging
-
-Using JSON instead of Git's binary index format made merge development dramatically faster. I could inspect staging state with `cat .git/index` and immediately see what was staged, without writing index parsers or debugging binary formats.
-
-**Specific example:** When debugging three-way merge, I could see exactly which files had conflicting OIDs by just opening the index file. With binary format, I'd need to write a parser first.
-
-### Three-Way Merge is 80% Bookkeeping, 20% Algorithm
-
-The "merge algorithm" everyone talks about? It's surprisingly simple:
-1. Find common ancestor (graph traversal)
-2. Compare base→ours and base→theirs (tree diffs)
-3. Apply both changes (dict operations)
-4. Detect conflicts (set intersections)
-
-The hard part was tree traversal, file mode handling, and working directory updates—not the merge logic itself.
-
-### Git's Design is Elegant
-
-Building this gave me deep appreciation for Git's architecture:
-- **Content-addressable storage:** Deduplication and integrity for free
-- **Refs are just pointers:** Branches are 41-byte files
-- **Trees are recursive:** Elegant directory representation
-- **Commits are immutable:** Time-travel debugging built-in
-
-The complexity in production Git (pack files, delta compression, sparse checkout) is all performance optimization. The core model is beautiful.
 
 ---
 
@@ -260,13 +235,10 @@ sapling/
 │   ├── plumbing.py         # Tree/commit/merge logic
 │   └── repository.py       # Repository primitives
 ├── tests/
-│   ├── test_hash_object.py
+│   ├── test_objects.py
 │   ├── test_index.py
-│   ├── test_commit.py
-│   ├── test_merge.py
-│   ├── test_branch_checkout.py
-│   ├── test_status_diff.py
-│   └── integration/
+│   ├── test_plumbing.py
+│   └── test_cli.py
 ├── docs/
 │   ├── Architecture.md     # System design
 │   ├── Comparison.md       # Sapling vs Git
@@ -311,6 +283,49 @@ Every loose object is stored as `type size\0payload`:
 - **Commits**: Plaintext metadata with tree/parent pointers + message
 
 See [`docs/Architecture.md`](docs/Architecture.md) for complete details.
+
+---
+
+## What I Learned
+
+### Content-Addressable Storage Clicks When You Build It
+
+Walking blob→tree→commit relationships manually made Git's object model intuitive. Mirroring Git's exact encoding (`type size\0payload`) let me `diff` Sapling's `.git/objects/` against real Git to verify correctness—instant feedback loop for learning.
+
+### JSON Index Accelerates Debugging 10x
+
+Using JSON instead of Git's binary index format made merge development dramatically faster. I could inspect staging state with `cat .git/index` and immediately see what was staged, without writing index parsers or debugging binary formats.
+
+**Specific example:** When debugging three-way merge, I could see exactly which files had conflicting OIDs by just opening the index file. With binary format, I'd need to write a parser first.
+
+### Three-Way Merge is 80% Bookkeeping, 20% Algorithm
+
+The "merge algorithm" everyone talks about? It's surprisingly simple:
+1. Find common ancestor (graph traversal)
+2. Compare base→ours and base→theirs (tree diffs)
+3. Apply both changes (dict operations)
+4. Detect conflicts (set intersections)
+
+The hard part was tree traversal, file mode handling, and working directory updates—not the merge logic itself.
+
+### Performance Trade-offs Are Instructive
+
+Sapling is ~2-3x slower than Git (see benchmarks). Why?
+- **Python vs C:** Interpreted language overhead
+- **Loose objects only:** No pack files or delta compression
+- **No caching:** Re-reads objects on every operation
+
+But this simplicity makes the code reviewable line-by-line. For pedagogy, clarity > speed.
+
+### Git's Design is Elegant
+
+Building this gave me deep appreciation for Git's architecture:
+- **Content-addressable storage:** Deduplication and integrity for free
+- **Refs are just pointers:** Branches are 41-byte files
+- **Trees are recursive:** Elegant directory representation
+- **Commits are immutable:** Time-travel debugging built-in
+
+The complexity in production Git (pack files, delta compression, sparse checkout) is all performance optimization. The core model is beautiful.
 
 ---
 

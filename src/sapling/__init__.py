@@ -1,4 +1,4 @@
-"""Sappling: a teaching implementation of core Git functionality."""
+"""Sapling: a teaching implementation of core Git functionality."""
 
 from .repository import Repository
 from .objects import hash_object, read_object

@@ -1,0 +1,2 @@
+[console_scripts]
+sapling = sapling.cli:main

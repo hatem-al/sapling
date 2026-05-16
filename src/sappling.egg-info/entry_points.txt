@@ -1,2 +1,0 @@
-[console_scripts]
-sappling = sappling.cli:main

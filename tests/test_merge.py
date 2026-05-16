@@ -1,8 +1,8 @@
 from pathlib import Path
 
-from sappling import index
-from sappling.objects import read_object
-from sappling.plumbing import (
+from sapling import index
+from sapling.objects import read_object
+from sapling.plumbing import (
     checkout_branch,
     create_branch,
     get_branch_commit,
@@ -12,7 +12,7 @@ from sappling.plumbing import (
     commit_tree,
     update_ref,
 )
-from sappling.repository import Repository
+from sapling.repository import Repository
 
 
 def stage_and_commit(repo: Repository, filename: str, content: str, message: str) -> str:

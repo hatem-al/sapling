@@ -1,4 +1,4 @@
-"""Command-line entry point for sappling."""
+"""Command-line entry point for sapling."""
 
 from __future__ import annotations
 
@@ -27,7 +27,8 @@ from .plumbing import (
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(prog="sappling", description="Educational Git clone")
+    parser = argparse.ArgumentParser(prog="sapling", description="Educational Git clone")
+    parser.add_argument("--version", action="version", version="sapling 0.1.0")
     sub = parser.add_subparsers(dest="command", required=True)
 
     init_parser = sub.add_parser("init", help="Create a new .git directory")
@@ -133,7 +134,7 @@ def main(argv: list[str] | None = None) -> int:
         worktree = Path(args.path).resolve()
         repo = Repository(worktree)
         repo.init()
-        print(f"Initialized empty sappling repository in {repo.git_dir}")
+        print(f"Initialized empty sapling repository in {repo.git_dir}")
         return 0
 
     if args.command == "hash-object":
@@ -142,7 +143,7 @@ def main(argv: list[str] | None = None) -> int:
         repo = Repository(Path(args.repo).resolve())
         git_dir = repo.git_dir
         if not git_dir.exists():
-            raise FileNotFoundError(f"{git_dir} does not exist. Run 'sappling init' first.")
+            raise FileNotFoundError(f"{git_dir} does not exist. Run 'sapling init' first.")
         oid = hash_object(data, obj_type=args.type, repo=repo, write=not args.dry_run)
         print(oid)
         return 0
@@ -164,7 +165,7 @@ def main(argv: list[str] | None = None) -> int:
         repo = Repository(Path(args.repo).resolve())
         worktree = repo.worktree
         if not worktree.exists():
-            raise FileNotFoundError(f"{worktree} does not exist. Run 'sappling init' first.")
+            raise FileNotFoundError(f"{worktree} does not exist. Run 'sapling init' first.")
         index_mod.add(repo, args.path)
         return 0
 
@@ -172,7 +173,7 @@ def main(argv: list[str] | None = None) -> int:
         repo = Repository(Path(args.repo).resolve())
         git_dir = repo.git_dir
         if not git_dir.exists():
-            raise FileNotFoundError(f"{git_dir} does not exist. Run 'sappling init' first.")
+            raise FileNotFoundError(f"{git_dir} does not exist. Run 'sapling init' first.")
         tree_sha = write_tree(repo)
         ref, parent = get_head_commit(repo)
         commit_sha = commit_tree(repo, tree_sha, parents=parent, message=args.message)
@@ -188,7 +189,7 @@ def main(argv: list[str] | None = None) -> int:
         repo = Repository(Path(args.repo).resolve())
         git_dir = repo.git_dir
         if not git_dir.exists():
-            raise FileNotFoundError(f"{git_dir} does not exist. Run 'sappling init' first.")
+            raise FileNotFoundError(f"{git_dir} does not exist. Run 'sapling init' first.")
         _, head = get_head_commit(repo)
         if not head:
             print("No commits yet.")
@@ -215,7 +216,7 @@ def main(argv: list[str] | None = None) -> int:
         repo = Repository(Path(args.repo).resolve())
         git_dir = repo.git_dir
         if not git_dir.exists():
-            raise FileNotFoundError(f"{git_dir} does not exist. Run 'sappling init' first.")
+            raise FileNotFoundError(f"{git_dir} does not exist. Run 'sapling init' first.")
         if args.name:
             _, head = get_head_commit(repo)
             if not head:
@@ -232,7 +233,7 @@ def main(argv: list[str] | None = None) -> int:
         repo = Repository(Path(args.repo).resolve())
         git_dir = repo.git_dir
         if not git_dir.exists():
-            raise FileNotFoundError(f"{git_dir} does not exist. Run 'sappling init' first.")
+            raise FileNotFoundError(f"{git_dir} does not exist. Run 'sapling init' first.")
         checkout_branch(repo, args.branch)
         print(f"Switched to branch '{args.branch}'")
         return 0
@@ -241,7 +242,7 @@ def main(argv: list[str] | None = None) -> int:
         repo = Repository(Path(args.repo).resolve())
         git_dir = repo.git_dir
         if not git_dir.exists():
-            raise FileNotFoundError(f"{git_dir} does not exist. Run 'sappling init' first.")
+            raise FileNotFoundError(f"{git_dir} does not exist. Run 'sapling init' first.")
         status = get_status(repo)
         print("On branch", get_current_branch(repo) or "(detached)")
         if status["staged"]:
@@ -264,7 +265,7 @@ def main(argv: list[str] | None = None) -> int:
         repo = Repository(Path(args.repo).resolve())
         git_dir = repo.git_dir
         if not git_dir.exists():
-            raise FileNotFoundError(f"{git_dir} does not exist. Run 'sappling init' first.")
+            raise FileNotFoundError(f"{git_dir} does not exist. Run 'sapling init' first.")
         diff = generate_diff(repo, staged=args.staged, paths=args.paths or None)
         if diff:
             print(diff)
@@ -274,7 +275,7 @@ def main(argv: list[str] | None = None) -> int:
         repo = Repository(Path(args.repo).resolve())
         git_dir = repo.git_dir
         if not git_dir.exists():
-            raise FileNotFoundError(f"{git_dir} does not exist. Run 'sappling init' first.")
+            raise FileNotFoundError(f"{git_dir} does not exist. Run 'sapling init' first.")
         result = merge_branch(repo, args.branch)
         commit = result.get("commit")
         if result.get("fast_forward"):

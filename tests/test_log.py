@@ -1,8 +1,8 @@
 from pathlib import Path
 
-from sappling import index
-from sappling.plumbing import commit_tree, get_head_commit, update_ref, walk_commits, write_tree
-from sappling.repository import Repository
+from sapling import index
+from sapling.plumbing import commit_tree, get_head_commit, update_ref, walk_commits, write_tree
+from sapling.repository import Repository
 
 
 def create_commit(repo: Repository, message: str) -> str:

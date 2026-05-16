@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from sappling.repository import Repository
+from sapling.repository import Repository
 
 
 def test_init_creates_git_directory(tmp_path: Path) -> None:

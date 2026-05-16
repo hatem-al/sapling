@@ -6,11 +6,11 @@ from pathlib import Path
 
 import pytest
 
-from sappling.plumbing import get_status
-from sappling.repository import Repository
+from sapling.plumbing import get_status
+from sapling.repository import Repository
 
 GIT_BIN = shutil.which("git")
-SAP_CMD = [sys.executable, "-m", "sappling.cli"]
+SAP_CMD = [sys.executable, "-m", "sapling.cli"]
 
 pytestmark = pytest.mark.skipif(GIT_BIN is None, reason="git executable is required")
 

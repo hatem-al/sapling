@@ -2,8 +2,8 @@ import zlib
 
 import pytest
 
-from sappling.objects import ObjectMissingError, hash_object, read_object
-from sappling.repository import Repository
+from sapling.objects import ObjectMissingError, hash_object, read_object
+from sapling.repository import Repository
 
 
 def test_hash_object_writes_blob(tmp_path) -> None:

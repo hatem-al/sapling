@@ -1,9 +1,9 @@
 import json
 from pathlib import Path
 
-from sappling import index
-from sappling.objects import hash_object
-from sappling.repository import Repository
+from sapling import index
+from sapling.objects import hash_object
+from sapling.repository import Repository
 
 
 def test_index_add_stages_blob_and_metadata(tmp_path: Path) -> None:

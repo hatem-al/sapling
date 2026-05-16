@@ -1,9 +1,9 @@
 from pathlib import Path
 
-from sappling import index
-from sappling.objects import read_object
-from sappling.plumbing import commit_tree, get_head_commit, update_ref, write_tree
-from sappling.repository import Repository
+from sapling import index
+from sapling.objects import read_object
+from sapling.plumbing import commit_tree, get_head_commit, update_ref, write_tree
+from sapling.repository import Repository
 
 
 def read_tree_entries(repo: Repository, tree_sha: str) -> list[tuple[str, str]]:

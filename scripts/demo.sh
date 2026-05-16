@@ -1,40 +1,40 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPO_DIR=${1:-/tmp/sappling-demo}
+REPO_DIR=${1:-/tmp/sapling-demo}
 
-echo "[sappling-demo] Preparing fresh workspace at $REPO_DIR"
+echo "[sapling-demo] Preparing fresh workspace at $REPO_DIR"
 rm -rf "$REPO_DIR"
 mkdir -p "$REPO_DIR"
 cd "$REPO_DIR"
 
-sappling init .
+sapling init .
 
 echo "hello world" > hello.txt
-sappling add hello.txt
-sappling commit -m "Initial commit"
+sapling add hello.txt
+sapling commit -m "Initial commit"
 
-sappling branch feature
-sappling checkout feature
+sapling branch feature
+sapling checkout feature
 
-echo "print('hi sappling')" > app.py
-sappling add app.py
-sappling commit -m "Add app skeleton"
+echo "print('hi sapling')" > app.py
+sapling add app.py
+sapling commit -m "Add app skeleton"
 
-sappling checkout master
+sapling checkout master
 
 echo "hello master" >> hello.txt
-sappling add hello.txt
-sappling commit -m "Touch base branch"
+sapling add hello.txt
+sapling commit -m "Touch base branch"
 
-sappling merge feature || true
+sapling merge feature || true
 
-sappling status
-sappling log
+sapling status
+sapling log
 
-printf '\n[sappling-demo] Loose objects in .git/objects:\n'
+printf '\n[sapling-demo] Loose objects in .git/objects:\n'
 find .git/objects -type f | sort
 
-printf '\n[sappling-demo] Dump commit object via cat-file:\n'
-LATEST=$(sappling log | head -n1 | awk '{print $2}')
-sappling cat-file "$LATEST"
+printf '\n[sapling-demo] Dump commit object via cat-file:\n'
+LATEST=$(sapling log | head -n1 | awk '{print $2}')
+sapling cat-file "$LATEST"

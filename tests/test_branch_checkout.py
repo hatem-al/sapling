@@ -1,8 +1,8 @@
 from pathlib import Path
 
-from sappling import index
-from sappling.objects import hash_object
-from sappling.plumbing import (
+from sapling import index
+from sapling.objects import hash_object
+from sapling.plumbing import (
     checkout_branch,
     create_branch,
     get_branch_commit,
@@ -13,7 +13,7 @@ from sappling.plumbing import (
     commit_tree,
     update_ref,
 )
-from sappling.repository import Repository
+from sapling.repository import Repository
 
 
 def commit(repo: Repository, message: str) -> str:

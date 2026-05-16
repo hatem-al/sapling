@@ -37,7 +37,7 @@ def commit_tree(
     now = int(time.time())
     tz = time.strftime("%z", time.localtime(now))
 
-    author_name = os.getenv("GIT_AUTHOR_NAME") or os.getenv("GIT_COMMITTER_NAME") or "Sappling User"
+    author_name = os.getenv("GIT_AUTHOR_NAME") or os.getenv("GIT_COMMITTER_NAME") or "Sapling User"
     author_email = os.getenv("GIT_AUTHOR_EMAIL") or os.getenv("GIT_COMMITTER_EMAIL") or "user@example.com"
     committer_name = os.getenv("GIT_COMMITTER_NAME") or author_name
     committer_email = os.getenv("GIT_COMMITTER_EMAIL") or author_email
