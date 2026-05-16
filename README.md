@@ -16,7 +16,7 @@ Sapling produces SHA-1 object IDs byte-for-byte identical to real Git. You can `
 
 ## Why Sapling?
 
-**For learning:** Understand Git by building it. Every commit, merge, and branch operation is implemented in readable Python with extensive comments.
+**For learning:** Understand Git by building it. Every commit, merge, and branch operation is implemented in readable Python.
 
 **For teaching:** The JSON index and loose-only objects make Git's internals transparent. Perfect for talks, tutorials, or CS courses.
 
@@ -111,7 +111,7 @@ pytest
 
 - macOS, Linux, or WSL2
 - ~10MB disk space for objects
-- Python 3.10+ (uses type hints and structural pattern matching)
+- Python 3.10+ (uses type hints and `|` union syntax)
 
 ---
 
@@ -224,12 +224,14 @@ Fast-forward to 7a26441
 
 # Inspect history
 ❯ sapling log
-commit 7a26441...
+commit 7a26441bad2b2bedb4be36a259c7d9406849b906
 Author: Sapling User <user@example.com>
+Date:   Sat May 16 21:34:09 2026 +0300
     Add app skeleton
 
-commit 87d39bc...
+commit 87d39bcaaae4b5e2b47c4f07bf5e4a3f1c2d8e90
 Author: Sapling User <user@example.com>
+Date:   Sat May 16 21:34:08 2026 +0300
     Initial commit
 
 # Objects are byte-for-byte Git-compatible
@@ -272,7 +274,7 @@ pytest
 pytest --cov=sapling --cov-report=html
 
 # Run specific test file
-pytest tests/test_objects.py -v
+pytest tests/test_hash_object.py -v
 ```
 
 ### Project Structure

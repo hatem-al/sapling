@@ -7,6 +7,9 @@ readme = "README.md"
 requires-python = ">=3.10"
 
 
+[project.optional-dependencies]
+dev = ["pytest"]
+
 [project.scripts]
 sapling = "sapling.cli:main"
 
